@@ -11,10 +11,14 @@ import android.widget.Toast;
 
 import com.example.rj.cryptodisplay.model.CurrencyAPI;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     public String API_BASE_URL = "https://www.bitstamp.net";
     public LineChart linechart;
-    public LineData data;
+    private String lastTid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,16 +48,30 @@ public class MainActivity extends AppCompatActivity {
         linechart = (LineChart)findViewById(R.id.crypto_line_chart);
         populateGraph();
 
+        // enable touch gestures
+        linechart.setTouchEnabled(true);
+
+        // enable scaling and dragging
+        linechart.setDragEnabled(true);
+        linechart.setScaleEnabled(true);
+
+        // if disabled, scaling can be done on x- and y-axis separately
+        linechart.setPinchZoom(true);
+
+        // set an alternative background color
+        linechart.setBackgroundColor(Color.LTGRAY);
+
+
         final Handler handler = new Handler();
 
         final Runnable r = new Runnable() {
             public void run() {
                 updateGraph();
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, 10000);
             }
         };
 
-        handler.postDelayed(r, 1000);
+        handler.postDelayed(r, 10000);
     }
 
     public void populateGraph()
@@ -96,10 +114,10 @@ public class MainActivity extends AppCompatActivity {
 
                 for(int i = 0; i < currencyList.size(); i++)
                 {
-                    entries.add(new Entry(i, Float.parseFloat(currencyList.get(i).getPrice())));
+                    entries.add(new Entry(i, Float.parseFloat(currencyList.get(currencyList.size() - 1 - i).getPrice())));
                     labels.add(currencyList.get(i).getDate());
-                    //Log.d("HELP", currencyList.get(i).getPrice());
                 }
+                lastTid = currencyList.get(0).getTid();
 
                 LineDataSet lineSet1 = new LineDataSet(entries, "Prices");
                 lineSet1.setDrawCircles(false);
@@ -108,8 +126,39 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
                 lineDataSets.add(lineSet1);
 
-                data = new LineData(lineDataSets);
-                linechart.setData(new LineData(lineDataSets));
+                LineData data = new LineData(lineDataSets);
+                data.setValueTextColor(Color.WHITE);
+                linechart.setData(data);
+
+                // get the legend (only possible after setting data)
+                Legend l = linechart.getLegend();
+
+                // modify the legend ...
+                l.setForm(Legend.LegendForm.LINE);
+
+                l.setTextColor(Color.WHITE);
+
+                XAxis xl = linechart.getXAxis();
+
+                xl.setTextColor(Color.WHITE);
+                xl.setDrawGridLines(false);
+                xl.setAvoidFirstLastClipping(true);
+                xl.setEnabled(true);
+
+                YAxis leftAxis = linechart.getAxisLeft();
+
+                leftAxis.setTextColor(Color.WHITE);
+                //leftAxis.setAxisMaximum(4400f);
+                //leftAxis.setAxisMinimum(4300f);
+                leftAxis.setDrawGridLines(true);
+
+                YAxis rightAxis = linechart.getAxisRight();
+                rightAxis.setEnabled(false);
+
+                linechart.getAxisRight().setAxisMinValue(lineSet1.getYMin());
+                linechart.getAxisRight().setAxisMaxValue(lineSet1.getYMax());
+                linechart.getAxisRight().setStartAtZero(false);
+
             }
 
             @Override
@@ -119,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Error :(", Toast.LENGTH_SHORT).show();
             }
         });
+        linechart.invalidate();
     }
 
     public void updateGraph()
@@ -153,9 +203,54 @@ public class MainActivity extends AppCompatActivity {
 
                 List<CurrencyAPI> currencyList = response.body();
                 currencyList.get(0);
-                Entry recentPrice = new Entry(0, Float.parseFloat(currencyList.get(0).getPrice()));
-                data.addEntry(recentPrice, 0);
-                Toast.makeText(MainActivity.this, currencyList.get(0).getPrice(), Toast.LENGTH_SHORT).show();
+
+
+                LineData data = linechart.getData();
+
+                if(data != null)
+                {
+                    ILineDataSet set = data.getDataSetByIndex(0);
+                    if(set == null)
+                    {
+                        set = createSet();
+                        data.addDataSet(set);
+                    }
+
+                    if(!currencyList.get(0).getTid().equals(lastTid))
+                    {
+                        int crawler = 0;
+                        for(crawler = 0; crawler < 100; crawler++)
+                        {
+                            //Log.d("TAG", "Last Tid: " + lastTid);
+                            //Log.d("TAG", currencyList.get(crawler).getTid());
+                            if(currencyList.get(crawler).getTid().equals(lastTid)) {
+                                break;
+                            }
+
+                            data.addEntry(new Entry(set.getEntryCount(), Float.parseFloat(currencyList.get(crawler).getPrice())), 0);
+                        }
+
+
+                        data.notifyDataChanged();
+                        linechart.notifyDataSetChanged();
+
+
+                         // let the chart know it's data changed
+                        //linechart.invalidate(); // refresh
+
+                        // limit the number of visible entries
+                        //linechart.setVisibleXRangeMaximum(100);
+                        // mChart.setVisibleYRange(30, AxisDependency.LEFT);
+
+                        // move to the latest entry, this will also call invalidate
+                        linechart.moveViewToX(data.getEntryCount());
+
+                        //set new lastTid
+                        lastTid = currencyList.get(0).getTid();
+
+                        Toast.makeText(MainActivity.this, "Crawler: " + Integer.toString(crawler) + " New Price: " + currencyList.get(0).getPrice(), Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
 
             @Override
@@ -165,8 +260,22 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Error :(", Toast.LENGTH_SHORT).show();
             }
         });
-
-        linechart.invalidate();
     }
 
+    private LineDataSet createSet() {
+
+        LineDataSet set = new LineDataSet(null, "Dynamic Data");
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setColor(ColorTemplate.getHoloBlue());
+        set.setCircleColor(Color.WHITE);
+        set.setLineWidth(2f);
+        set.setCircleRadius(4f);
+        set.setFillAlpha(65);
+        set.setFillColor(ColorTemplate.getHoloBlue());
+        set.setHighLightColor(Color.rgb(244, 117, 117));
+        set.setValueTextColor(Color.WHITE);
+        set.setValueTextSize(9f);
+        set.setDrawValues(false);
+        return set;
+    }
 }

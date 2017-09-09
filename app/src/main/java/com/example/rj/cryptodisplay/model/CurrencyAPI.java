@@ -8,7 +8,6 @@ import static android.R.attr.name;
 /**
  * Created by RJ on 9/8/17.
  */
-// date": "1504926797", "tid": "20682266", "price": "4273.14", "type": "1", "amount": "0.02000000"
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
