@@ -1,15 +1,20 @@
 package com.example.rj.cryptodisplay;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.rj.cryptodisplay.model.BidData;
@@ -26,7 +31,9 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Currency;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -52,21 +59,15 @@ public class MainActivity extends AppCompatActivity {
 
         linechart = (LineChart)findViewById(R.id.crypto_line_chart);
         populateGraph();
-
         // enable touch gestures
         linechart.setTouchEnabled(true);
-
         // enable scaling and dragging
         linechart.setDragEnabled(true);
         linechart.setScaleEnabled(true);
-
         // if disabled, scaling can be done on x- and y-axis separately
         linechart.setPinchZoom(true);
-
         // set an alternative background color
         linechart.setBackgroundColor(Color.LTGRAY);
-
-
         //Create new thread of execution to handle updateing the graph every 10 seconds
         final Handler handler = new Handler();
         final Runnable r = new Runnable() {
@@ -78,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         //handler.postDelayed(r, 10000);
         Thread graphThread = new Thread(r);
         graphThread.start();
-
         linechart.invalidate();
     }
 
@@ -272,5 +272,21 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(this, BidsAndAsks.class);
         startActivity(intent);
+    }
+
+    public void submitted(View v)
+    {
+        Log.d("HELP", "Submitted");
+        EditText price = (EditText)findViewById(R.id.PricetoCheck);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        Long alertTime = new GregorianCalendar().getTimeInMillis()+62*1000;
+
+        Intent alertIntent = new Intent(this, AlertReceiver.class);
+        alertIntent.putExtra("PRICE", price.getText().toString());
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 60000 ,PendingIntent.getBroadcast(this, 0, alertIntent, PendingIntent.FLAG_CANCEL_CURRENT));
     }
 }

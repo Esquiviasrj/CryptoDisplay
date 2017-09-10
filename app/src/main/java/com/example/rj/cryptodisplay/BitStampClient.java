@@ -2,6 +2,7 @@ package com.example.rj.cryptodisplay;
 
 import com.example.rj.cryptodisplay.model.BidData;
 import com.example.rj.cryptodisplay.model.CurrencyAPI;
+import com.example.rj.cryptodisplay.model.Hourly;
 
 import java.util.List;
 
@@ -20,6 +21,9 @@ public interface BitStampClient {
 
     @GET("/api/v2/transactions/btcusd/")
     Call<List<CurrencyAPI>> getCurrent();
+
+    @GET("/api/v2/ticker_hour/btcusd/")
+    Call<Hourly> getHourly();
 
     //https://www.bitstamp.net/api/v2/order_book/btcusd/
 

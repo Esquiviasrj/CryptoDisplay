@@ -3,6 +3,7 @@
     package="com.example.rj.cryptodisplay">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
 
     <application
         android:allowBackup="true"
@@ -19,6 +20,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".BidsAndAsks"></activity>
+
+        <receiver android:name=".AlertReceiver"/>
+
     </application>
 
 </manifest>

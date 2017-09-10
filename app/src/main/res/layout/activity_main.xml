@@ -23,4 +23,22 @@
         android:layout_height="wrap_content"
         android:onClick="moveToBids"/>
 
+    <EditText
+        android:id="@+id/PricetoCheck"
+        android:layout_below="@id/bidsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:hint="Price To Check"/>
+
+    <Button
+        android:id="@+id/submitPrice"
+        android:text="submit!"
+        android:layout_below="@id/bidsButton"
+        android:layout_toRightOf="@id/PricetoCheck"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="submitted"/>
+
 </RelativeLayout>

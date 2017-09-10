@@ -1,6 +1,10 @@
 package com.example.rj.cryptodisplay;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.Handler;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,6 +37,9 @@ public class BidsAndAsks extends AppCompatActivity {
 
     public String API_BASE_URL = "https://www.bitstamp.net";
 
+    public static NotificationCompat.Builder notification;
+    public static final int uniqueID = 87424;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +54,15 @@ public class BidsAndAsks extends AppCompatActivity {
         askRecycle.setLayoutManager(new LinearLayoutManager(this));
 
         bidItems = new ArrayList<>();
+        bidAdapter = new BidAdapter(bidItems, BidsAndAsks.this);
+        bidRecycle.setAdapter(bidAdapter);
+
         askItems = new ArrayList<>();
+        askAdapter = new AskAdapter(askItems, BidsAndAsks.this);
+        askRecycle.setAdapter(askAdapter);
+
+        askAdapter.notifyItemInserted(0);
+        bidAdapter.notifyItemInserted(0);
         populateBidItems();
 
         //Create new thread of execution to handle updating the graph every 10 seconds
@@ -64,9 +79,29 @@ public class BidsAndAsks extends AppCompatActivity {
     }
 
     public void addItem(View v){
-        askItems.add(0, new AskItem("1", "2", "3"));
-        askAdapter.notifyItemInserted(0);
-        //mRecyclerView.smoothScrollToPosition(0);
+        setNotificationParams();
+    }
+
+    public void setNotificationParams()
+    {
+        notification = new NotificationCompat.Builder(getApplicationContext());
+        notification.setAutoCancel(true);
+
+        //Build the notification
+        notification.setSmallIcon(R.drawable.robot);
+        notification.setTicker("This is the ticker");
+        notification.setWhen(System.currentTimeMillis());
+        notification.setContentTitle("Here is the title");
+        notification.setContentText("I am the body text of your notification");
+
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        notification.setContentIntent(pendingIntent);
+
+        //Builds notification and issues it
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        nm.notify(uniqueID, notification.build());
+
     }
 
     public void updateBidsAndAsks()
@@ -98,8 +133,6 @@ public class BidsAndAsks extends AppCompatActivity {
                     {
                         break;
                     }
-
-
 
                     BidItem bitem = new BidItem(Bid, Price,
                             Double.toString((Double.parseDouble(bidList.get(i).get(0).toString()) * Double.parseDouble(bidList.get(i).get(1).toString()))));
@@ -149,7 +182,6 @@ public class BidsAndAsks extends AppCompatActivity {
         });
     }
 
-
     public void populateBidItems()
     {
         Call<BidData> call = fetchBidsAndAsks();
@@ -175,14 +207,10 @@ public class BidsAndAsks extends AppCompatActivity {
                     AskItem aitem = new AskItem(askList.get(i).get(0).toString(), askList.get(i).get(1).toString(),
                             Double.toString((Double.parseDouble(askList.get(i).get(0).toString()) * Double.parseDouble(askList.get(i).get(1).toString()))));
                     askItems.add(i, aitem);
+
+                    askAdapter.notifyItemInserted(i);
+                    bidAdapter.notifyItemInserted(i);
                 }
-
-                bidAdapter = new BidAdapter(bidItems, BidsAndAsks.this);
-                bidRecycle.setAdapter(bidAdapter);
-
-                askAdapter = new AskAdapter(askItems, BidsAndAsks.this);
-                askRecycle.setAdapter(askAdapter);
-
             }
             @Override
             public void onFailure(Call<BidData> call, Throwable t)
