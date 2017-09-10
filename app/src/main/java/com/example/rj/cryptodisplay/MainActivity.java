@@ -67,16 +67,18 @@ public class MainActivity extends AppCompatActivity {
         linechart.setBackgroundColor(Color.LTGRAY);
 
 
+        //Create new thread of execution to handle updateing the graph every 10 seconds
         final Handler handler = new Handler();
-
         final Runnable r = new Runnable() {
             public void run() {
                 updateGraph();
                 handler.postDelayed(this, 10000);
             }
         };
+        //handler.postDelayed(r, 10000);
+        Thread graphThread = new Thread(r);
+        graphThread.start();
 
-        handler.postDelayed(r, 10000);
         linechart.invalidate();
     }
 

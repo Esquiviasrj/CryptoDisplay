@@ -19,6 +19,17 @@ public class BidData {
     @SerializedName("bids")
     @Expose
     private List<List<String>> bids = null;
+    @SerializedName("asks")
+    @Expose
+    private List<List<String>> asks = null;
+
+    public List<List<String>> getAsks() {
+        return asks;
+    }
+
+    public void setAsks(List<List<String>> asks) {
+        this.asks = asks;
+    }
 
     public String getTimestamp() {
         return timestamp;

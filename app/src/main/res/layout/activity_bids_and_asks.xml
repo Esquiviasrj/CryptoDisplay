@@ -6,11 +6,93 @@
     android:layout_height="match_parent"
     tools:context="com.example.rj.cryptodisplay.BidsAndAsks">
 
-    <android.support.v7.widget.RecyclerView
+    <TextView
+        android:id="@+id/bidtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bid"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/Bids"
+        android:layout_alignStart="@+id/Bids" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Amount"
+        android:id="@+id/textView"
+        android:layout_alignBaseline="@+id/bidtext"
+        android:layout_alignBottom="@+id/bidtext"
+        android:layout_toRightOf="@+id/bidtext"
+        android:layout_toEndOf="@+id/bidtext"
+        android:layout_marginLeft="80dp"
+        android:layout_marginStart="80dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+         android:text="Value"
+        android:id="@+id/textView2"
+        android:layout_alignBaseline="@+id/textView"
+        android:layout_alignBottom="@+id/textView"
+        android:layout_toRightOf="@+id/textView"
+        android:layout_toEndOf="@+id/textView"
+        android:layout_marginLeft="64dp"
+        android:layout_marginStart="64dp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="55dp"
         android:id="@+id/Bids"
         android:layout_width="match_parent"
         android:layout_height="200dp"></android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/asktext"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ask"
+        android:layout_below="@+id/Bids"
+        android:layout_alignLeft="@+id/bidtext"
+        android:layout_alignStart="@+id/bidtext" />
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Amount"
+        android:id="@+id/amountText"
+        android:layout_below="@+id/Bids"
+        android:layout_marginLeft="80dp"
+        android:layout_marginStart="80dp"
+        android:layout_toRightOf="@+id/asktext"/>
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Value"
+        android:id="@+id/valueText"
+        android:layout_below="@+id/Bids"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_alignStart="@+id/textView2" />
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@+id/Bids"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="55dp"
+        android:id="@+id/Asks"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"></android.support.v7.widget.RecyclerView>
+
+    <Button
+        android:layout_below="@id/Asks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="push"
+        android:onClick="addItem"/>
 
 </RelativeLayout>
