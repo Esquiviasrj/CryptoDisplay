@@ -1,5 +1,6 @@
 package com.example.rj.cryptodisplay;
 
+import com.example.rj.cryptodisplay.model.BidData;
 import com.example.rj.cryptodisplay.model.CurrencyAPI;
 
 import java.util.List;
@@ -14,6 +15,13 @@ import retrofit2.http.Path;
 
 public interface BitStampClient {
 
+    @GET("/api/v2/order_book/btcusd/")
+    Call<BidData> getBids();
+
     @GET("/api/v2/transactions/btcusd/")
     Call<List<CurrencyAPI>> getCurrent();
+
+    //https://www.bitstamp.net/api/v2/order_book/btcusd/
+
+
 }

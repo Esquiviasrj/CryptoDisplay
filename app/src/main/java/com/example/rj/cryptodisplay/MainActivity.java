@@ -1,14 +1,18 @@
 package com.example.rj.cryptodisplay;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.rj.cryptodisplay.model.BidData;
 import com.example.rj.cryptodisplay.model.CurrencyAPI;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         linechart = (LineChart)findViewById(R.id.crypto_line_chart);
         populateGraph();
 
@@ -72,30 +77,12 @@ public class MainActivity extends AppCompatActivity {
         };
 
         handler.postDelayed(r, 10000);
+        linechart.invalidate();
     }
 
     public void populateGraph()
     {
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-
-        Retrofit.Builder builder =
-                new Retrofit.Builder()
-                        .baseUrl(API_BASE_URL)
-                        .addConverterFactory(
-                                GsonConverterFactory.create()
-                        );
-
-        Retrofit retrofit =
-                builder
-                        .client(
-                                httpClient.build()
-                        )
-                        .build();
-
-        BitStampClient client =  retrofit.create(BitStampClient.class);
-
-        // Fetch a list
-        Call<List<CurrencyAPI>> call = client.getCurrent();
+        Call<List<CurrencyAPI>> call = fetchCurrencyList();
 
         // Execute call asynchronously.  Get a positive or negative callback
         call.enqueue(new Callback<List<CurrencyAPI>>(){
@@ -105,10 +92,8 @@ public class MainActivity extends AppCompatActivity {
                 // TODO: use the repository list and display it
 
                 List<CurrencyAPI> currencyList = response.body();
-
                 //Y value
                 ArrayList<Entry> entries = new ArrayList<Entry>();
-
                 //X value
                 ArrayList<String> labels = new ArrayList<String>();
 
@@ -135,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
 
                 // modify the legend ...
                 l.setForm(Legend.LegendForm.LINE);
-
                 l.setTextColor(Color.WHITE);
 
                 XAxis xl = linechart.getXAxis();
@@ -173,26 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateGraph()
     {
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-
-        Retrofit.Builder builder =
-                new Retrofit.Builder()
-                        .baseUrl(API_BASE_URL)
-                        .addConverterFactory(
-                                GsonConverterFactory.create()
-                        );
-
-        Retrofit retrofit =
-                builder
-                        .client(
-                                httpClient.build()
-                        )
-                        .build();
-
-        BitStampClient client =  retrofit.create(BitStampClient.class);
-
-        // Fetch a list
-        Call<List<CurrencyAPI>> call = client.getCurrent();
+        Call<List<CurrencyAPI>> call = fetchCurrencyList();
 
         // Execute call asynchronously.  Get a positive or negative callback
         call.enqueue(new Callback<List<CurrencyAPI>>() {
@@ -236,14 +201,14 @@ public class MainActivity extends AppCompatActivity {
 
 
                          // let the chart know it's data changed
-                        //linechart.invalidate(); // refresh
+                        linechart.invalidate(); // refresh
 
                         // limit the number of visible entries
                         //linechart.setVisibleXRangeMaximum(100);
                         // mChart.setVisibleYRange(30, AxisDependency.LEFT);
 
                         // move to the latest entry, this will also call invalidate
-                        linechart.moveViewToX(data.getEntryCount());
+                        //linechart.moveViewToX(data.getEntryCount());
 
                         //set new lastTid
                         lastTid = currencyList.get(0).getTid();
@@ -262,6 +227,28 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    Call<List<CurrencyAPI>> fetchCurrencyList()
+    {
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+
+        Retrofit.Builder builder =
+                new Retrofit.Builder()
+                        .baseUrl(API_BASE_URL)
+                        .addConverterFactory(
+                                GsonConverterFactory.create()
+                        );
+
+        Retrofit retrofit =
+                builder
+                        .client(
+                                httpClient.build()
+                        )
+                        .build();
+
+        BitStampClient client =  retrofit.create(BitStampClient.class);
+        return client.getCurrent();
+    }
+
     private LineDataSet createSet() {
 
         LineDataSet set = new LineDataSet(null, "Dynamic Data");
@@ -277,5 +264,11 @@ public class MainActivity extends AppCompatActivity {
         set.setValueTextSize(9f);
         set.setDrawValues(false);
         return set;
+    }
+
+    public void moveToBids(View v)
+    {
+        Intent intent = new Intent(this, BidsAndAsks.class);
+        startActivity(intent);
     }
 }
