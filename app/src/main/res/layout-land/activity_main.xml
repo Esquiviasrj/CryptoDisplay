@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    tools:context="com.example.rj.cryptodisplay.MainActivity">
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/crypto_line_chart"
+        android:layout_width="match_parent"
+        android:layout_height="225dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_alignParentBottom="true"/>
+
+    <TextView
+        android:id="@+id/HighDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HIGH: "
+        android:textColor="@android:color/white"
+        android:layout_marginLeft="250dp"
+        android:layout_marginStart="250dp"
+        android:layout_alignTop="@+id/LiveTradesDisplay"
+        android:layout_toRightOf="@+id/LiveTradesDisplay"
+        android:layout_toEndOf="@+id/LiveTradesDisplay" />
+
+    <TextView
+        android:id="@+id/HighData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="@android:color/white"
+        android:layout_above="@+id/LowData"
+        android:layout_alignLeft="@+id/LowData"
+        android:layout_alignStart="@+id/LowData" />
+
+    <TextView
+        android:id="@+id/LowDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/HighDisplay"
+        android:layout_alignStart="@+id/HighDisplay"
+        android:layout_below="@+id/HighDisplay"
+        android:text="LOW:"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/LowData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="@android:color/white"
+        android:layout_below="@+id/HighDisplay"
+        android:layout_toRightOf="@+id/HighDisplay"
+        android:layout_toEndOf="@+id/HighDisplay"
+        android:layout_marginLeft="17dp"
+        android:layout_marginStart="17dp" />
+
+    <TextView
+        android:id="@+id/BidDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/HighDisplay"
+        android:layout_alignStart="@id/HighDisplay"
+        android:layout_below="@+id/LowDisplay"
+        android:text="BID:"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/BidData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="@android:color/white"
+        android:layout_below="@+id/LowData"
+        android:layout_alignLeft="@+id/LowData"
+        android:layout_alignStart="@+id/LowData" />
+
+    <TextView
+        android:id="@+id/AskDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/BidDisplay"
+        android:layout_alignStart="@+id/BidDisplay"
+        android:layout_below="@+id/BidDisplay"
+        android:text="ASK:"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/AskData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="@android:color/white"
+        android:layout_below="@+id/BidData"
+        android:layout_alignLeft="@+id/BidData"
+        android:layout_alignStart="@+id/BidData" />
+
+    <TextView
+        android:id="@+id/currentCyrptoPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="@android:color/white"
+        android:textSize="40sp"
+        android:layout_marginLeft="45dp"
+        android:layout_alignBottom="@+id/AskDisplay"/>
+
+    <TextView
+        android:id="@+id/LiveTradesDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recent Live Trade"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="20dp"/>
+
+</RelativeLayout>

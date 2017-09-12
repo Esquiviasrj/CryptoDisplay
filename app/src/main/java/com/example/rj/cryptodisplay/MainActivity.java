@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.set_alarm:
-                Toast.makeText(this, "set alarm", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "set alarm", Toast.LENGTH_SHORT).show();
                 dialog.show();
                 return true;
             case R.id.ask_bid:
@@ -273,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
                         //set new lastTid
                         lastTid = currencyList.get(0).getTid();
 
-                        Toast.makeText(MainActivity.this, "Crawler: " + Integer.toString(crawler) + " New Price: " + currencyList.get(0).getPrice(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, "Crawler: " + Integer.toString(crawler) + " New Price: " + currencyList.get(0).getPrice(), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
         alertIntent.putExtra("PRICE", price.getText().toString());
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 60000 ,PendingIntent.getBroadcast(this, 0, alertIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR ,PendingIntent.getBroadcast(this, 0, alertIntent, PendingIntent.FLAG_CANCEL_CURRENT));
     }
 
     public void setHighLowBidAsk()
