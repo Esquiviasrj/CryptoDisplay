@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/set_alarm"
+        android:title="Set alarm"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/alarmclock"/>
+    <item android:id="@+id/ask_bid"
+        android:title="Asks + Bids" />
+</menu>

@@ -3,22 +3,25 @@ package com.example.rj.cryptodisplay;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.NotificationCompat;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.rj.cryptodisplay.model.BidData;
 import com.example.rj.cryptodisplay.model.CurrencyAPI;
+import com.example.rj.cryptodisplay.model.Hourly;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -28,14 +31,10 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Currency;
 import java.util.GregorianCalendar;
 import java.util.List;
-
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,22 +42,52 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static android.R.attr.entries;
-
 public class MainActivity extends AppCompatActivity {
 
     public String API_BASE_URL = "https://www.bitstamp.net";
     public LineChart linechart;
     private String lastTid;
+    public TextView hData;
+    public TextView lData;
+    public TextView bData;
+    public TextView aData;
+    public AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        hData = (TextView)findViewById(R.id.HighData);
+        lData = (TextView)findViewById(R.id.LowData);
+        bData = (TextView)findViewById(R.id.BidData);
+        aData = (TextView)findViewById(R.id.AskData);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Hourly Notification if Entered Price is Below Current Bitcount Price")
+                .setTitle("Set An Hourly Alarm")
+                .setPositiveButton("Set", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK button
+                        submitted();
+                        Toast.makeText(getApplicationContext(), "Alarm Set", Toast.LENGTH_LONG).show();
+                    }
+                    })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                 })
+                .setView(R.layout.alarm_layout);
+
+        dialog = builder.create();
 
         linechart = (LineChart)findViewById(R.id.crypto_line_chart);
+        linechart.setNoDataText("Grabbing Graph Data");
         populateGraph();
+        updateGraph();
+        setHighLowBidAsk();
+
         // enable touch gestures
         linechart.setTouchEnabled(true);
         // enable scaling and dragging
@@ -67,12 +96,18 @@ public class MainActivity extends AppCompatActivity {
         // if disabled, scaling can be done on x- and y-axis separately
         linechart.setPinchZoom(true);
         // set an alternative background color
-        linechart.setBackgroundColor(Color.LTGRAY);
+        linechart.setBackgroundColor(Color.BLACK);
         //Create new thread of execution to handle updateing the graph every 10 seconds
+
+        //linechart.getData().notifyDataChanged();
+        //linechart.notifyDataSetChanged();
+        linechart.invalidate();
+
         final Handler handler = new Handler();
         final Runnable r = new Runnable() {
             public void run() {
                 updateGraph();
+                setHighLowBidAsk();
                 handler.postDelayed(this, 10000);
             }
         };
@@ -82,6 +117,29 @@ public class MainActivity extends AppCompatActivity {
         linechart.invalidate();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.set_alarm:
+                Toast.makeText(this, "set alarm", Toast.LENGTH_SHORT).show();
+                dialog.show();
+                return true;
+            case R.id.ask_bid:
+                moveToBids();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public void populateGraph()
     {
         Call<List<CurrencyAPI>> call = fetchCurrencyList();
@@ -89,15 +147,15 @@ public class MainActivity extends AppCompatActivity {
         // Execute call asynchronously.  Get a positive or negative callback
         call.enqueue(new Callback<List<CurrencyAPI>>(){
             @Override
-            public void onResponse(Call<List<CurrencyAPI>> call, Response<List<CurrencyAPI>> response) {
+            public void onResponse(@NonNull Call<List<CurrencyAPI>> call, @NonNull Response<List<CurrencyAPI>> response) {
                 // The network call was a success and we got a response
                 // TODO: use the repository list and display it
 
                 List<CurrencyAPI> currencyList = response.body();
                 //Y value
-                ArrayList<Entry> entries = new ArrayList<Entry>();
+                ArrayList<Entry> entries = new ArrayList<>();
                 //X value
-                ArrayList<String> labels = new ArrayList<String>();
+                ArrayList<String> labels = new ArrayList<>();
 
                 for(int i = 0; i < currencyList.size(); i++)
                 {
@@ -169,9 +227,10 @@ public class MainActivity extends AppCompatActivity {
                 // TODO: use the repository list and display it
 
                 List<CurrencyAPI> currencyList = response.body();
-                currencyList.get(0);
+                TextView currentPriceDisplay = (TextView) findViewById(R.id.currentCyrptoPrice);
+                currentPriceDisplay.setText(currencyList.get(0).getPrice());
 
-
+                linechart.invalidate(); // refresh
                 LineData data = linechart.getData();
 
                 if(data != null)
@@ -186,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
                     if(!currencyList.get(0).getTid().equals(lastTid))
                     {
                         int crawler = 0;
-                        for(crawler = 0; crawler < 100; crawler++)
+                        for(crawler = 0; crawler < currencyList.size(); crawler++)
                         {
                             //Log.d("TAG", "Last Tid: " + lastTid);
                             //Log.d("TAG", currencyList.get(crawler).getTid());
@@ -200,7 +259,6 @@ public class MainActivity extends AppCompatActivity {
 
                         data.notifyDataChanged();
                         linechart.notifyDataSetChanged();
-
 
                          // let the chart know it's data changed
                         linechart.invalidate(); // refresh
@@ -251,6 +309,28 @@ public class MainActivity extends AppCompatActivity {
         return client.getCurrent();
     }
 
+    Call<Hourly> fetchHourlyPrices()
+    {
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+
+        Retrofit.Builder builder =
+                new Retrofit.Builder()
+                        .baseUrl(API_BASE_URL)
+                        .addConverterFactory(
+                                GsonConverterFactory.create()
+                        );
+
+        Retrofit retrofit =
+                builder
+                        .client(
+                                httpClient.build()
+                        )
+                        .build();
+
+        BitStampClient client =  retrofit.create(BitStampClient.class);
+        return client.getHourly();
+    }
+
     private LineDataSet createSet() {
 
         LineDataSet set = new LineDataSet(null, "Dynamic Data");
@@ -268,16 +348,15 @@ public class MainActivity extends AppCompatActivity {
         return set;
     }
 
-    public void moveToBids(View v)
+    public void moveToBids()
     {
         Intent intent = new Intent(this, BidsAndAsks.class);
         startActivity(intent);
     }
 
-    public void submitted(View v)
+    public void submitted()
     {
-        Log.d("HELP", "Submitted");
-        EditText price = (EditText)findViewById(R.id.PricetoCheck);
+        EditText price = (EditText)dialog.findViewById(R.id.user_price);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
@@ -289,4 +368,30 @@ public class MainActivity extends AppCompatActivity {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 60000 ,PendingIntent.getBroadcast(this, 0, alertIntent, PendingIntent.FLAG_CANCEL_CURRENT));
     }
+
+    public void setHighLowBidAsk()
+    {
+        Call<Hourly> call = fetchHourlyPrices();
+            call.enqueue(new Callback<Hourly>() {
+            @Override
+            public void onResponse(Call<Hourly> call, Response<Hourly> response) {
+                // The network call was a success and we got a response
+                // TODO: use the repository list and display it
+
+                Hourly hObject = response.body();
+                hData.setText(hObject.getHigh().toString());
+                lData.setText(hObject.getLow().toString());
+                bData.setText(hObject.getBid().toString());
+                aData.setText(hObject.getAsk().toString());
+            }
+
+            @Override
+            public void onFailure(Call<Hourly> call, Throwable t) {
+                // the network call was a failure
+                // TODO: handle error
+                Log.d("HELP", "ONFAILURE");
+            }
+        });
+    }
+
 }

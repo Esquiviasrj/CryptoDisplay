@@ -44,10 +44,15 @@ public class AlertReceiver extends BroadcastReceiver {
                 // TODO: use the repository list and display it
 
                 Hourly hObject = response.body();
-
-                if(Double.parseDouble(p) > Double.parseDouble(hObject.getVwap()))
+                if(p.isEmpty() || hObject.getVwap().isEmpty())
                 {
-                    createNotification(c, hObject.getVwap(), "Price is below " + p, "Alert");
+                    //Don't send notification on false results
+                }
+                else
+                {
+                    if (Double.parseDouble(p) > Double.parseDouble(hObject.getVwap())) {
+                        createNotification(c, hObject.getVwap(), "Price is below " + p, "Alert");
+                    }
                 }
             }
 

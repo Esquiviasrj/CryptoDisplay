@@ -124,12 +124,12 @@ public class BidsAndAsks extends AppCompatActivity {
                 Stack<BidItem> bidStack = new Stack<BidItem>();
 
                 //One loop for bids
-                for(int i = 0; i < 100; i++)
+                for(int i = 0; i < bidList.size(); i++)
                 {
                     String Bid = bidList.get(i).get(0).toString();
                     String Price = bidList.get(i).get(1).toString();
 
-                    if(Bid.equals(bidItems.get(i).getBid()) && Price.equals(bidItems.get(i).getAmount()))
+                    if((i > bidItems.size() - 1) || (Bid.equals(bidItems.get(i).getBid()) && Price.equals(bidItems.get(i).getAmount())))
                     {
                         break;
                     }
@@ -142,12 +142,12 @@ public class BidsAndAsks extends AppCompatActivity {
                 Stack<AskItem> askStack = new Stack<AskItem>();
 
                 //One loop for asks
-                for(int i = 0; i < 100; i++)
+                for(int i = 0; i < askList.size(); i++)
                 {
                     String Ask = askList.get(i).get(0).toString();
                     String Price = askList.get(i).get(1).toString();
 
-                    if(Ask.equals(askItems.get(i).getBid()) && Price.equals(askItems.get(i).getAmount()))
+                    if((i > askItems.size() - 1) || (Ask.equals(askItems.get(i).getBid()) && Price.equals(askItems.get(i).getAmount())))
                     {
                         break;
                     }
@@ -161,11 +161,15 @@ public class BidsAndAsks extends AppCompatActivity {
                 while(!bidStack.empty())
                 {
                     bidItems.add(0, bidStack.pop());
+                    //BidItem rItem = bidItems.get(bidItems.size() - 1);
+                    //askItems.remove(rItem);
                     bidAdapter.notifyItemInserted(0);
                 }
                 while(!askStack.empty())
                 {
                     askItems.add(0, askStack.pop());
+                    //AskItem rItem = askItems.get(askItems.size() - 1);
+                    //askItems.remove(rItem);
                     askAdapter.notifyItemInserted(0);
                 }
 
@@ -198,18 +202,23 @@ public class BidsAndAsks extends AppCompatActivity {
                 List<List<String> > bidList = bids.getBids();
                 List<List<String> > askList = bids.getAsks();
 
-                for(int i = 0; i < 100; i++)
+
+                for(int i = 0; i < bidList.size(); i++)
                 {
                     BidItem bitem = new BidItem(bidList.get(i).get(0).toString(), bidList.get(i).get(1).toString(),
                             Double.toString((Double.parseDouble(bidList.get(i).get(0).toString()) * Double.parseDouble(bidList.get(i).get(1).toString()))));
                     bidItems.add(i, bitem);
 
+                    bidAdapter.notifyItemInserted(i);
+                }
+
+                for(int i = 0; i < askList.size(); i++)
+                {
                     AskItem aitem = new AskItem(askList.get(i).get(0).toString(), askList.get(i).get(1).toString(),
                             Double.toString((Double.parseDouble(askList.get(i).get(0).toString()) * Double.parseDouble(askList.get(i).get(1).toString()))));
                     askItems.add(i, aitem);
 
                     askAdapter.notifyItemInserted(i);
-                    bidAdapter.notifyItemInserted(i);
                 }
             }
             @Override
