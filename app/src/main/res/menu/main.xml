@@ -7,4 +7,6 @@
         android:icon="@drawable/alarmclock"/>
     <item android:id="@+id/ask_bid"
         android:title="Asks + Bids" />
+    <item android:id="@+id/disable_alarms"
+        android:title="Disable alarms"/>
 </menu>

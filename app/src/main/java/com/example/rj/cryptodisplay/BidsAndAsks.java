@@ -40,6 +40,8 @@ public class BidsAndAsks extends AppCompatActivity {
     public static NotificationCompat.Builder notification;
     public static final int uniqueID = 87424;
 
+    public Thread BidsThread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +76,7 @@ public class BidsAndAsks extends AppCompatActivity {
             }
         };
         //handler.postDelayed(r, 10000);
-        Thread BidsThread = new Thread(r);
+        BidsThread = new Thread(r);
         BidsThread.start();
     }
 
@@ -180,8 +182,6 @@ public class BidsAndAsks extends AppCompatActivity {
             public void onFailure(Call<BidData> call, Throwable t)
             {
                 // the network call was a failure
-                // TODO: handle error
-                Toast.makeText(BidsAndAsks.this, "Error :(", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -225,8 +225,6 @@ public class BidsAndAsks extends AppCompatActivity {
             public void onFailure(Call<BidData> call, Throwable t)
             {
                 // the network call was a failure
-                // TODO: handle error
-                Toast.makeText(BidsAndAsks.this, "Error :(", Toast.LENGTH_SHORT).show();
             }
         });
     }

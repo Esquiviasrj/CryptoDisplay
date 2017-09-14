@@ -60,7 +60,6 @@ public class AlertReceiver extends BroadcastReceiver {
             public void onFailure(Call<Hourly> call, Throwable t) {
                 // the network call was a failure
                 // TODO: handle error
-                Log.d("HELP", "ONFAILURE");
             }
         });
 
@@ -69,7 +68,6 @@ public class AlertReceiver extends BroadcastReceiver {
 
     public void createNotification(Context context, String msg, String msgText, String msgAlert)
     {
-        Log.d("Help", "here");
         android.support.v7.app.NotificationCompat.Builder notification;
         final int uniqueID = 87424;
 
@@ -77,7 +75,7 @@ public class AlertReceiver extends BroadcastReceiver {
         notification.setAutoCancel(true);
 
         //Build the notification
-        notification.setSmallIcon(R.drawable.robot);
+        notification.setSmallIcon(R.mipmap.zicon);
         notification.setTicker(msgAlert);
         notification.setWhen(System.currentTimeMillis());
         notification.setContentTitle(msg);

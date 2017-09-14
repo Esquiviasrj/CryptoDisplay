@@ -17,7 +17,7 @@
         android:layout_marginLeft="12dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="20dp"
-        android:text="Bid"
+        android:text="@string/bid"
         android:textColor="@android:color/white" />
 
     <TextView
@@ -30,7 +30,7 @@
         android:layout_marginStart="80dp"
         android:layout_toEndOf="@+id/bidtext"
         android:layout_toRightOf="@+id/bidtext"
-        android:text="Amount"
+        android:text="@string/amount"
         android:textColor="@android:color/white" />
 
     <TextView
@@ -43,7 +43,7 @@
         android:layout_marginStart="64dp"
         android:layout_toEndOf="@+id/textView"
         android:layout_toRightOf="@+id/textView"
-        android:text="Value"
+        android:text="@string/value"
         android:textColor="@android:color/white" />
 
     <android.support.v7.widget.RecyclerView
@@ -61,7 +61,7 @@
         android:layout_alignStart="@+id/bidtext"
         android:layout_below="@+id/Bids"
         android:layout_marginTop="20dp"
-        android:text="Ask"
+        android:text="@string/ask"
         android:textColor="@android:color/white" />
 
     <TextView
@@ -73,7 +73,7 @@
         android:layout_marginStart="80dp"
         android:layout_marginTop="20dp"
         android:layout_toRightOf="@+id/asktext"
-        android:text="Amount"
+        android:text="@string/amount"
         android:textColor="@android:color/white" />
 
     <TextView
@@ -84,7 +84,7 @@
         android:layout_alignStart="@+id/textView2"
         android:layout_below="@+id/Bids"
         android:layout_marginTop="20dp"
-        android:text="Value"
+        android:text="@string/value"
         android:textColor="@android:color/white" />
 
     <android.support.v7.widget.RecyclerView

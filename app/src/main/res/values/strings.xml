@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">CryptoDisplay</string>
+    <string name="app_name">ILoveZappos</string>
+    <string name="bid">Bid</string>
+    <string name="amount">Amount</string>
+    <string name="value">Value</string>
+    <string name="ask">Ask</string>
+    <string name="high">HIGH:</string>
+    <string name="_0">0</string>
+    <string name="low">LOW:</string>
+    <string name="recent_live_trade">Recent Live Trade</string>
 </resources>

@@ -17,7 +17,7 @@
         android:layout_marginLeft="12dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="20dp"
-        android:text="Bid"
+        android:text="@string/bid"
         android:textColor="@android:color/white" />
 
     <TextView
@@ -30,7 +30,7 @@
         android:layout_marginStart="80dp"
         android:layout_toEndOf="@+id/bidtext"
         android:layout_toRightOf="@+id/bidtext"
-        android:text="Amount"
+        android:text="@string/amount"
         android:textColor="@android:color/white" />
 
     <TextView
@@ -43,7 +43,7 @@
         android:layout_marginStart="64dp"
         android:layout_toEndOf="@+id/textView"
         android:layout_toRightOf="@+id/textView"
-        android:text="Value"
+        android:text="@string/value"
         android:textColor="@android:color/white" />
 
     <android.support.v7.widget.RecyclerView
@@ -57,7 +57,7 @@
         android:id="@+id/asktext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ask"
+        android:text="@string/ask"
         android:textColor="@android:color/white"
         android:layout_alignBaseline="@+id/textView2"
         android:layout_alignBottom="@+id/textView2"
@@ -70,7 +70,7 @@
         android:id="@+id/amountText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Amount"
+        android:text="@string/amount"
         android:textColor="@android:color/white"
         android:layout_alignBaseline="@+id/valueText"
         android:layout_alignBottom="@+id/valueText"
@@ -83,7 +83,7 @@
         android:id="@+id/valueText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Value"
+        android:text="@string/value"
         android:textColor="@android:color/white"
         android:layout_alignBaseline="@+id/asktext"
         android:layout_alignBottom="@+id/asktext"

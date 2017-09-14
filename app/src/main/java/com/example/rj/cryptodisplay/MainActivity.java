@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     public TextView bData;
     public TextView aData;
     public AlertDialog dialog;
+    public Thread graphThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
         linechart = (LineChart)findViewById(R.id.crypto_line_chart);
         linechart.setNoDataText("Grabbing Graph Data");
+
         populateGraph();
         updateGraph();
         setHighLowBidAsk();
@@ -103,16 +105,20 @@ public class MainActivity extends AppCompatActivity {
         //linechart.notifyDataSetChanged();
         linechart.invalidate();
 
-        final Handler handler = new Handler();
         final Runnable r = new Runnable() {
             public void run() {
                 updateGraph();
                 setHighLowBidAsk();
-                handler.postDelayed(this, 10000);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
             }
         };
-        //handler.postDelayed(r, 10000);
-        Thread graphThread = new Thread(r);
+
+        graphThread = new Thread(r);
         graphThread.start();
         linechart.invalidate();
     }
@@ -125,15 +131,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        populateGraph();
+        updateGraph();
+        setHighLowBidAsk();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.set_alarm:
-                //Toast.makeText(this, "set alarm", Toast.LENGTH_SHORT).show();
                 dialog.show();
                 return true;
             case R.id.ask_bid:
                 moveToBids();
+                return true;
+            case R.id.disable_alarms:
+                Toast.makeText(this, "Alarms disabled", Toast.LENGTH_SHORT).show();
+                Intent alertIntent = new Intent(this, AlertReceiver.class);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alertIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarmManager.cancel(pendingIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -208,8 +228,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<CurrencyAPI>> call, Throwable t) {
                 // the network call was a failure
-                // TODO: handle error
-                Toast.makeText(MainActivity.this, "Error :(", Toast.LENGTH_SHORT).show();
             }
         });
         linechart.invalidate();
@@ -272,8 +290,6 @@ public class MainActivity extends AppCompatActivity {
 
                         //set new lastTid
                         lastTid = currencyList.get(0).getTid();
-
-                        //Toast.makeText(MainActivity.this, "Crawler: " + Integer.toString(crawler) + " New Price: " + currencyList.get(0).getPrice(), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -281,8 +297,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<CurrencyAPI>> call, Throwable t) {
                 // the network call was a failure
-                // TODO: handle error
-                Toast.makeText(MainActivity.this, "Error :(", Toast.LENGTH_SHORT).show();
             }
         });
     }
